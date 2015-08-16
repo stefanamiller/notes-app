@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ReactiveCocoa
 
 class MasterViewController: UITableViewController {
 
@@ -16,6 +17,7 @@ class MasterViewController: UITableViewController {
 
    override func awakeFromNib() {
       super.awakeFromNib()
+      
       if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
           self.clearsSelectionOnViewWillAppear = false
           self.preferredContentSize = CGSize(width: 320.0, height: 600.0)
@@ -41,7 +43,7 @@ class MasterViewController: UITableViewController {
    }
 
    func insertNewObject(sender: AnyObject) {
-      objects.insert(NSDate(), atIndex: 0)
+      objects.insert(Note(), atIndex: 0)
       let indexPath = NSIndexPath(forRow: 0, inSection: 0)
       self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
    }
@@ -51,9 +53,9 @@ class MasterViewController: UITableViewController {
    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
       if segue.identifier == "showDetail" {
           if let indexPath = self.tableView.indexPathForSelectedRow() {
-              let object = objects[indexPath.row] as! NSDate
+              let note = objects[indexPath.row] as! Note
               let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-              controller.detailItem = object
+              controller.detailItem = note
               controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
               controller.navigationItem.leftItemsSupplementBackButton = true
           }
@@ -73,8 +75,9 @@ class MasterViewController: UITableViewController {
    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
       let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
 
-      let object = objects[indexPath.row] as! NSDate
-      cell.textLabel!.text = object.description
+      let note = objects[indexPath.row] as! Note
+      let noteModel = NoteViewModel(note)
+      cell.textLabel!.text = noteModel.dateStamp.value
       return cell
    }
 

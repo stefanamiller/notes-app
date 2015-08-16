@@ -7,32 +7,79 @@
 //
 
 import UIKit
+import ReactiveCocoa
 
 class DetailViewController: UIViewController {
 
    @IBOutlet weak var detailDescriptionLabel: UILabel!
-
-
-   var detailItem: AnyObject? {
+   
+   lazy var dynamicDescription: DynamicProperty = {
+      return DynamicProperty(object: self.detailDescriptionLabel, keyPath: "text")
+   }()
+   
+   let viewModel: NoteViewModel = NoteViewModel()
+   
+   var detailItem: Note? {
       didSet {
-          // Update the view.
-          self.configureView()
+         viewModel.note.put(detailItem)
       }
    }
+//   var detailItem: Note? //{
+//      didSet {
+//         if let note = detailItem {
+//            dynamicDescription <~ note.dateStamp
+//         }
+////          // Update the view.
+////          self.configureView()
+//      }
+//   }
 
-   func configureView() {
-      // Update the user interface for the detail item.
-      if let detail: AnyObject = self.detailItem {
-          if let label = self.detailDescriptionLabel {
-              label.text = detail.description
-          }
-      }
-   }
+//   func configureView() {
+//      // Update the user interface for the detail item.
+//      if let note = self.detailItem {
+//          if let label = self.detailDescriptionLabel {
+//              label.text = note.dateUpdated.value.description
+//          }
+//      }
+//   }
 
    override func viewDidLoad() {
       super.viewDidLoad()
-      // Do any additional setup after loading the view, typically from a nib.
-      self.configureView()
+
+      dynamicDescription <~ viewModel.dateStamp.producer |> map { $0 as AnyObject? }
+      
+//      if let note = detailItem {
+//         dynamicDescription <~ note.dateStamp.producer |> map { $0 as AnyObject? }
+//      }
+      
+      //RAC(self.detailDescriptionLabel, "text") <~
+//      self.rac_valuesForKeyPath("detailItem", observer: self)
+      
+//      let updatedMapper: Signal<Date, NoError> ~> Signal<String, NoError> = map({
+//         date in
+//         return date.description
+//      })
+      
+//      detailItem?.dateUpdated.producer
+//         |> map {
+//            if let date = $0 {
+//               return date.description
+//            }
+//            return ""
+//      }
+      
+//      var sig: Signal = Signal<String, NoError> {
+//         sink in
+//         return ""
+//      }
+      
+      
+//      self.configureView()
+   }
+   
+   func descriptionForDate(date: NSDate) -> String
+   {
+      return date.description
    }
 
    override func didReceiveMemoryWarning() {

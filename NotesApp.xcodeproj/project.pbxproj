@@ -17,6 +17,7 @@
 		F8657BE71B7FE7BA00720120 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8657BE61B7FE7BA00720120 /* Result.framework */; };
 		F8657BF61B7FEB9500720120 /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8657BEB1B7FE88D00720120 /* ReactiveCocoa.framework */; };
 		F8657BF81B801CDB00720120 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8657BF71B801CDB00720120 /* Note.swift */; };
+		F899D2711B82FC1F00A7E00B /* ReactiveCocoaExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F899D2701B82FC1F00A7E00B /* ReactiveCocoaExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		F8657BE61B7FE7BA00720120 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = "Carthage/Checkouts/Result/build/Debug-iphoneos/Result.framework"; sourceTree = "<group>"; };
 		F8657BEB1B7FE88D00720120 /* ReactiveCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveCocoa.framework; path = Carthage/Build/iOS/ReactiveCocoa.framework; sourceTree = "<group>"; };
 		F8657BF71B801CDB00720120 /* Note.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		F899D2701B82FC1F00A7E00B /* ReactiveCocoaExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactiveCocoaExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 				F82D01B31B7FC35300A06082 /* LaunchScreen.xib */,
 				F82D01A61B7FC35200A06082 /* Supporting Files */,
 				F8657BF71B801CDB00720120 /* Note.swift */,
+				F899D2701B82FC1F00A7E00B /* ReactiveCocoaExtensions.swift */,
 			);
 			path = NotesApp;
 			sourceTree = "<group>";
@@ -236,6 +239,7 @@
 			files = (
 				F82D01AD1B7FC35300A06082 /* DetailViewController.swift in Sources */,
 				F82D01AB1B7FC35300A06082 /* MasterViewController.swift in Sources */,
+				F899D2711B82FC1F00A7E00B /* ReactiveCocoaExtensions.swift in Sources */,
 				F82D01A91B7FC35300A06082 /* AppDelegate.swift in Sources */,
 				F8657BF81B801CDB00720120 /* Note.swift in Sources */,
 			);

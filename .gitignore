@@ -6,3 +6,5 @@
 *.xcuserdatad
 *.xcuserstate
 *.xcscheme
+
+*.xccheckout

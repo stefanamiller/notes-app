@@ -12,8 +12,8 @@ import ReactiveCocoa
 class MasterViewController: UITableViewController {
 
    var detailViewController: DetailViewController? = nil
-   var objects = [AnyObject]()
 
+   let listViewModel: NoteListViewModel! = NoteListViewModel()
 
    override func awakeFromNib() {
       super.awakeFromNib()
@@ -26,26 +26,38 @@ class MasterViewController: UITableViewController {
 
    override func viewDidLoad() {
       super.viewDidLoad()
-      // Do any additional setup after loading the view, typically from a nib.
+      
+      self.setupBindings()
       self.navigationItem.leftBarButtonItem = self.editButtonItem()
-
-      let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "insertNewObject:")
+      
+      let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: listViewModel.addAction, action: CocoaAction.selector)
       self.navigationItem.rightBarButtonItem = addButton
       if let split = self.splitViewController {
           let controllers = split.viewControllers
           self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
       }
+      
    }
-
-   override func didReceiveMemoryWarning() {
-      super.didReceiveMemoryWarning()
-      // Dispose of any resources that can be recreated.
+   
+   func setupBindings() {
+      listViewModel.insertSignal |> observe(next: insertRowsForIndexes)
+      listViewModel.removeSignal |> observe(next: deleteRowsForIndexes)
    }
-
-   func insertNewObject(sender: AnyObject) {
-      objects.insert(Note(), atIndex: 0)
-      let indexPath = NSIndexPath(forRow: 0, inSection: 0)
-      self.tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+   
+   func insertRowsForIndexes(indexes: NSIndexSet) {
+      var indexPaths = [NSIndexPath]()
+      for index in indexes {
+         indexPaths.append(NSIndexPath(forRow: index, inSection: 0))
+      }
+      tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
+   }
+   
+   func deleteRowsForIndexes(indexes: NSIndexSet) {
+      var indexPaths = [NSIndexPath]()
+      for index in indexes {
+         indexPaths.append(NSIndexPath(forRow: index, inSection: 0))
+      }
+      tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Fade)
    }
 
    // MARK: - Segues
@@ -53,9 +65,10 @@ class MasterViewController: UITableViewController {
    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
       if segue.identifier == "showDetail" {
           if let indexPath = self.tableView.indexPathForSelectedRow() {
-              let note = objects[indexPath.row] as! Note
+              let noteModel = listViewModel.noteViewModelAtIndex(indexPath.row)
               let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-              controller.bindViewModel(NoteViewModel())
+
+              controller.bindViewModel(noteModel)
               controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
               controller.navigationItem.leftItemsSupplementBackButton = true
           }
@@ -69,32 +82,26 @@ class MasterViewController: UITableViewController {
    }
 
    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return objects.count
+      return listViewModel.countOfNotes()
    }
 
    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
       let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
 
-      let note = objects[indexPath.row] as! Note
-      let noteModel = NoteViewModel(note)
+      let noteModel = listViewModel.noteViewModelAtIndex(indexPath.row)
       cell.textLabel!.text = noteModel.dateStamp.value
       return cell
    }
 
    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-      // Return false if you do not want the specified item to be editable.
       return true
    }
 
    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
       if editingStyle == .Delete {
-          objects.removeAtIndex(indexPath.row)
-          tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-      } else if editingStyle == .Insert {
-          // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+         listViewModel.deleteNoteAtIndex(indexPath.row)
       }
    }
-
 
 }
 

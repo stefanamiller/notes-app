@@ -14,6 +14,7 @@
 		F82D01B21B7FC35300A06082 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F82D01B11B7FC35300A06082 /* Images.xcassets */; };
 		F82D01B51B7FC35300A06082 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F82D01B31B7FC35300A06082 /* LaunchScreen.xib */; };
 		F82D01C11B7FC35300A06082 /* NotesAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F82D01C01B7FC35300A06082 /* NotesAppTests.swift */; };
+		F85B4F7C1B84450900EBC862 /* NoteListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B4F7B1B84450900EBC862 /* NoteListViewModel.swift */; };
 		F85B4F801B84458F00EBC862 /* NoteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B4F7F1B84458F00EBC862 /* NoteViewModel.swift */; };
 		F8657BE71B7FE7BA00720120 /* Result.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8657BE61B7FE7BA00720120 /* Result.framework */; };
 		F8657BF61B7FEB9500720120 /* ReactiveCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8657BEB1B7FE88D00720120 /* ReactiveCocoa.framework */; };
@@ -43,6 +44,7 @@
 		F82D01BA1B7FC35300A06082 /* NotesAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotesAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F82D01BF1B7FC35300A06082 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F82D01C01B7FC35300A06082 /* NotesAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAppTests.swift; sourceTree = "<group>"; };
+		F85B4F7B1B84450900EBC862 /* NoteListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteListViewModel.swift; sourceTree = "<group>"; };
 		F85B4F7F1B84458F00EBC862 /* NoteViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteViewModel.swift; sourceTree = "<group>"; };
 		F8657BE61B7FE7BA00720120 /* Result.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Result.framework; path = "Carthage/Checkouts/Result/build/Debug-iphoneos/Result.framework"; sourceTree = "<group>"; };
 		F8657BEB1B7FE88D00720120 /* ReactiveCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReactiveCocoa.framework; path = Carthage/Build/iOS/ReactiveCocoa.framework; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 		F85B4F7D1B84452800EBC862 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				F85B4F7B1B84450900EBC862 /* NoteListViewModel.swift */,
 				F85B4F7F1B84458F00EBC862 /* NoteViewModel.swift */,
 			);
 			name = ViewModel;
@@ -259,6 +262,7 @@
 				F85B4F801B84458F00EBC862 /* NoteViewModel.swift in Sources */,
 				F82D01AD1B7FC35300A06082 /* DetailViewController.swift in Sources */,
 				F82D01AB1B7FC35300A06082 /* MasterViewController.swift in Sources */,
+				F85B4F7C1B84450900EBC862 /* NoteListViewModel.swift in Sources */,
 				F899D2711B82FC1F00A7E00B /* ReactiveCocoaExtensions.swift in Sources */,
 				F82D01A91B7FC35300A06082 /* AppDelegate.swift in Sources */,
 				F8657BF81B801CDB00720120 /* Note.swift in Sources */,

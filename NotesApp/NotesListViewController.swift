@@ -1,5 +1,5 @@
 //
-//  MasterViewController.swift
+//  NotesListViewController.swift
 //  NotesApp
 //
 //  Created by Stefan Miller on 2015-08-15.
@@ -13,9 +13,9 @@ class NoteListTableViewCell: UITableViewCell {
    lazy var updatedTime: DynamicProperty! = DynamicProperty(object: self.textLabel, keyPath: "text")
 }
 
-class MasterViewController: UITableViewController {
+class NotesListViewController: UITableViewController {
 
-   var detailViewController: DetailViewController? = nil
+   var detailViewController: NoteEditingViewController? = nil
    var lastIndexPath: NSIndexPath?
 
    let listViewModel: NoteListViewModel! = NoteListViewModel()
@@ -39,7 +39,7 @@ class MasterViewController: UITableViewController {
       self.navigationItem.rightBarButtonItem = addButton
       if let split = self.splitViewController {
           let controllers = split.viewControllers
-          self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
+          self.detailViewController = controllers[controllers.count-1].topViewController as? NoteEditingViewController
       }
       
    }
@@ -71,7 +71,7 @@ class MasterViewController: UITableViewController {
       if segue.identifier == "showDetail" {
           if let indexPath = self.tableView.indexPathForSelectedRow() {
               let noteModel = listViewModel.noteViewModelAtIndex(indexPath.row)
-              let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+              let controller = (segue.destinationViewController as! UINavigationController).topViewController as! NoteEditingViewController
 
               self.detailViewController = controller
               lastIndexPath = indexPath

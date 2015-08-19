@@ -1,5 +1,5 @@
 //
-//  DetailViewController.swift
+//  NoteEditingViewController.swift
 //  NotesApp
 //
 //  Created by Stefan Miller on 2015-08-15.
@@ -9,7 +9,7 @@
 import UIKit
 import ReactiveCocoa
 
-class DetailViewController: UIViewController {
+class NoteEditingViewController: UIViewController {
 
    @IBOutlet weak var detailDescriptionLabel: UILabel!
    @IBOutlet weak var bodyTextView: UITextView!
@@ -40,9 +40,9 @@ class DetailViewController: UIViewController {
       self.detailDescriptionLabel.text = ""
       
       updatedText <~ viewModel.dateStamp.producer
-         |> on(next: { next in
-            NSLog("Note Date: \(next)");
-         })
+//         |> on(next: { next in
+//            NSLog("Note Date: \(next)");
+//         })
          |> map { $0 as AnyObject? }
       
       bodyTextChange <~ viewModel.noteBody.producer |> map { $0 as AnyObject? }

@@ -15,7 +15,11 @@ class NoteViewModel: NSObject {
    let dateStamp = MutableProperty<String>("")
    let noteBody  = MutableProperty<String?>("")
    
+   let editingEnabled: ConstantProperty<Bool>
+   
    init(_ n: Note?) {
+
+      editingEnabled = ConstantProperty(n != nil)
       super.init()
       
       setupBindings()

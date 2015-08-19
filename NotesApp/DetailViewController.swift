@@ -16,6 +16,7 @@ class DetailViewController: UIViewController {
    
    lazy var updatedText: DynamicProperty! = DynamicProperty(object: self.detailDescriptionLabel, keyPath: "text")
    lazy var bodyTextChange: DynamicProperty! = DynamicProperty(object: self.bodyTextView, keyPath: "text")
+   lazy var bodyEditingEnabled: DynamicProperty! = DynamicProperty(object: self.bodyTextView, keyPath: "editable")
    
    var viewModel: NoteViewModel!
    
@@ -36,6 +37,7 @@ class DetailViewController: UIViewController {
    }
    
    func setupBindings() {
+      self.detailDescriptionLabel.text = ""
       
       updatedText <~ viewModel.dateStamp.producer
          |> on(next: { next in
@@ -47,6 +49,14 @@ class DetailViewController: UIViewController {
       
       bodyTextView.rac_textSignal().asSignal()
          |> observe (next: typedText) // Ideally we would bind the signal to the updateText function directly, not sure how to do this
+      
+      bodyEditingEnabled <~ viewModel.editingEnabled.producer
+         |> on(next: { [weak bodyTextView] enabled in
+            if (bodyTextView!.isFirstResponder()) {
+               bodyTextView!.resignFirstResponder()
+            }
+         })
+         |> map { $0 as AnyObject? }
    }
 
    func typedText(text: AnyObject?) {

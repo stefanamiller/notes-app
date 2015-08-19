@@ -9,6 +9,10 @@
 import UIKit
 import ReactiveCocoa
 
+class NoteListTableViewCell: UITableViewCell {
+   lazy var updatedTime: DynamicProperty! = DynamicProperty(object: self.textLabel, keyPath: "text")
+}
+
 class MasterViewController: UITableViewController {
 
    var detailViewController: DetailViewController? = nil
@@ -86,10 +90,10 @@ class MasterViewController: UITableViewController {
    }
 
    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-      let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
+      let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! NoteListTableViewCell
 
       let noteModel = listViewModel.noteViewModelAtIndex(indexPath.row)
-      cell.textLabel!.text = noteModel.dateStamp.value
+      cell.updatedTime <~ noteModel.dateStamp.producer |> map { $0 as AnyObject }
       return cell
    }
 

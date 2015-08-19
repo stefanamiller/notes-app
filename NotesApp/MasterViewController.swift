@@ -55,7 +55,6 @@ class MasterViewController: UITableViewController {
           if let indexPath = self.tableView.indexPathForSelectedRow() {
               let note = objects[indexPath.row] as! Note
               let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-              controller.note = note
               controller.bindViewModel(NoteViewModel())
               controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
               controller.navigationItem.leftItemsSupplementBackButton = true

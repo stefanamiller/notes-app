@@ -16,6 +16,7 @@ class NoteListTableViewCell: UITableViewCell {
 class MasterViewController: UITableViewController {
 
    var detailViewController: DetailViewController? = nil
+   var lastIndexPath: NSIndexPath?
 
    let listViewModel: NoteListViewModel! = NoteListViewModel()
 
@@ -72,6 +73,9 @@ class MasterViewController: UITableViewController {
               let noteModel = listViewModel.noteViewModelAtIndex(indexPath.row)
               let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
 
+              self.detailViewController = controller
+              lastIndexPath = indexPath
+
               controller.bindViewModel(noteModel)
               controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
               controller.navigationItem.leftItemsSupplementBackButton = true
@@ -104,8 +108,37 @@ class MasterViewController: UITableViewController {
    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
       if editingStyle == .Delete {
          listViewModel.deleteNoteAtIndex(indexPath.row)
+         self.selectNextNoteIfAvailable(indexPath)
       }
    }
 
+   func selectNextNoteIfAvailable(indexPath: NSIndexPath) {
+      if let oldIndexPath = self.lastIndexPath {
+         if indexPath.isEqual(oldIndexPath) && detailViewController != nil {
+            self.lastIndexPath = self.nextIndexPathForNoteAfter(indexPath)
+            self.selectNewNoteRowAtIndexPath(self.lastIndexPath)
+         }
+      }
+   }
+   
+   func nextIndexPathForNoteAfter(indexPath: NSIndexPath) -> NSIndexPath? {
+      if (indexPath.row < tableView.numberOfRowsInSection(0)) {
+         return NSIndexPath(forRow: indexPath.row, inSection: 0)
+      }
+      else {
+         return nil
+      }
+   }
+   
+   func selectNewNoteRowAtIndexPath(indexPath: NSIndexPath?) {
+      var nextViewModel: NoteViewModel? = nil
+      if let newIndexPath = indexPath {
+         nextViewModel = listViewModel.noteViewModelAtIndex(newIndexPath.row)
+         tableView.selectRowAtIndexPath(newIndexPath, animated: true, scrollPosition: .Bottom)
+      }
+      
+      let viewModel = nextViewModel ?? NoteViewModel()
+      detailViewController?.bindViewModel(viewModel)
+   }
 }
 

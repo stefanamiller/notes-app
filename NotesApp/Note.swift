@@ -8,7 +8,14 @@
 
 import UIKit
 
-class Note: NSObject {
+class Note {
    var dateUpdated: NSDate = NSDate()
    var body: String? = ""
+
+   func copy() -> Note {
+      let copy = Note()
+      copy.dateUpdated = dateUpdated
+      copy.body = body
+      return copy
+   }
 }

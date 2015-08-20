@@ -10,7 +10,14 @@ import UIKit
 import ReactiveCocoa
 
 class NoteViewModel: NSObject {
-   private let note = MutableProperty<Note?>(nil)
+   private let noteMutator = MutableProperty<Note?>(nil)
+   var note: Note? { get {
+      if let note = noteMutator.value {
+         return note.copy()
+      } else {
+         return nil
+      }
+   }}
    
    let dateStamp = MutableProperty<String>("")
    let noteBody  = MutableProperty<String?>("")
@@ -23,7 +30,7 @@ class NoteViewModel: NSObject {
       super.init()
       
       setupBindings()
-      self.note.put(n)
+      self.noteMutator.put(n)
    }
    
    convenience override init() {
@@ -31,7 +38,7 @@ class NoteViewModel: NSObject {
    }
    
    func setupBindings() {
-      dateStamp <~ note.producer
+      dateStamp <~ noteMutator.producer
          |> ignoreNil
          |> map { note in
             note.dateUpdated
@@ -41,7 +48,7 @@ class NoteViewModel: NSObject {
          //         })
          |> self.formatUpdatedDate()
       
-      noteBody <~ note.producer
+      noteBody <~ noteMutator.producer
          |> ignoreNil
          |> map { note in
             note.body
@@ -67,10 +74,10 @@ class NoteViewModel: NSObject {
    }
    
    func updateText(text: String?) {
-      if let noteRaw = self.note.value {
+      if let noteRaw = self.note {
          noteRaw.body = text
          noteRaw.dateUpdated = NSDate()
-         note.put(noteRaw)
+         noteMutator.put(noteRaw)
       }
    }
 }

@@ -10,25 +10,26 @@ import UIKit
 import ReactiveCocoa
 
 class NoteListViewModel: NSObject {
+   typealias IndicesChangeSignal = Signal<Int,NoError>
+   
    let notes = MutableProperty<[NoteViewModel]>([NoteViewModel]())
    
-   let insertSignal: Signal<NSIndexSet,NoError>
-   private let insertSink: Signal<NSIndexSet,NoError>.Observer
-   
-   let removeSignal: Signal<NSIndexSet,NoError>
-   private let removeSink: Signal<NSIndexSet,NoError>.Observer
+   let insertSignal: IndicesChangeSignal
+   let removeSignal: IndicesChangeSignal
    
    var addAction: CocoaAction!
    
+   private let insertSink: IndicesChangeSignal.Observer
+   private let removeSink: IndicesChangeSignal.Observer
    override init() {
       
-      let (insertPipeSig, insertPipeSink) = Signal<NSIndexSet,NoError>.pipe()
+      let (insertPipeSig, insertPipeSink) = IndicesChangeSignal.pipe()
       insertSignal = insertPipeSig
       insertSink   = insertPipeSink
       
-      let (removePipeSig, removePipeSink) = Signal<NSIndexSet,NoError>.pipe()
-      removeSignal   = removePipeSig
-      removeSink = removePipeSink
+      let (removePipeSig, removePipeSink) = IndicesChangeSignal.pipe()
+      removeSignal = removePipeSig
+      removeSink   = removePipeSink
       
       super.init()
       
@@ -42,6 +43,7 @@ class NoteListViewModel: NSObject {
    
    deinit {
       sendCompleted(insertSink)
+      sendCompleted(removeSink)
    }
    
    func countOfNotes() -> Int {
@@ -56,13 +58,13 @@ class NoteListViewModel: NSObject {
       var newNotes = notes.value
       newNotes.insert(NoteViewModel(Note()), atIndex: 0)
       notes.put(newNotes)
-      sendNext(insertSink, NSIndexSet(index: 0))
+      sendNext(insertSink, 0)
    }
    
    func deleteNoteAtIndex(index: Int) {
       var newNotes = notes.value
       newNotes.removeAtIndex(index)
       notes.put(newNotes)
-      sendNext(removeSink, NSIndexSet(index: index))
+      sendNext(removeSink, index)
    }
 }

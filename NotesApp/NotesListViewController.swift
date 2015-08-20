@@ -45,23 +45,30 @@ class NotesListViewController: UITableViewController {
    }
    
    func setupBindings() {
-      listViewModel.insertSignal |> observe(next: insertRowsForIndexes)
-      listViewModel.removeSignal |> observe(next: deleteRowsForIndexes)
+      // TODO: Refactor as Actions ???
+      listViewModel.insertSignal
+         |> mapIndexes()
+         |> observe(next: insertRowsForIndexes)
+      listViewModel.removeSignal
+         |> mapIndexes()
+         |> observe(next: deleteRowsForIndexes)
    }
    
-   func insertRowsForIndexes(indexes: NSIndexSet) {
-      var indexPaths = [NSIndexPath]()
-      for index in indexes {
-         indexPaths.append(NSIndexPath(forRow: index, inSection: 0))
+   func mapIndexes() -> ReactiveCocoa.Signal<Int, NoError> -> ReactiveCocoa.Signal<[NSIndexPath], NoError> {
+      return map { indexes in
+         return [self.indexPathForNoteIndex(indexes)]
       }
+   }
+   
+   func indexPathForNoteIndex(noteIndex: Int) -> NSIndexPath {
+      return NSIndexPath(forRow: noteIndex, inSection: 0)
+   }
+   
+   func insertRowsForIndexes(indexPaths: [NSIndexPath]) {
       tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: .Automatic)
    }
    
-   func deleteRowsForIndexes(indexes: NSIndexSet) {
-      var indexPaths = [NSIndexPath]()
-      for index in indexes {
-         indexPaths.append(NSIndexPath(forRow: index, inSection: 0))
-      }
+   func deleteRowsForIndexes(indexPaths: [NSIndexPath]) {
       tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Fade)
    }
 

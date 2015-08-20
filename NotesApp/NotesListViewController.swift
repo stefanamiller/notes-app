@@ -52,11 +52,22 @@ class NotesListViewController: UITableViewController {
       listViewModel.removeSignal
          |> mapIndexes()
          |> observe(next: deleteRowsForIndexes)
+      listViewModel.updateSignal
+         |> mapIndexPair()
+         |> observe(next: moveRowsBetweenIndexPaths)
    }
    
    func mapIndexes() -> ReactiveCocoa.Signal<Int, NoError> -> ReactiveCocoa.Signal<[NSIndexPath], NoError> {
       return map { indexes in
          return [self.indexPathForNoteIndex(indexes)]
+      }
+   }
+   
+   func mapIndexPair() -> ReactiveCocoa.Signal<(Int,Int), NoError> -> ReactiveCocoa.Signal<(NSIndexPath,NSIndexPath), NoError> {
+      return map { indexPairs in
+         let fromIndexPath = self.indexPathForNoteIndex(indexPairs.0)
+         let toIndexPath   = self.indexPathForNoteIndex(indexPairs.1)
+         return (fromIndexPath, toIndexPath)
       }
    }
    
@@ -70,6 +81,10 @@ class NotesListViewController: UITableViewController {
    
    func deleteRowsForIndexes(indexPaths: [NSIndexPath]) {
       tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: .Fade)
+   }
+   
+   func moveRowsBetweenIndexPaths(indexPathPair: (NSIndexPath,NSIndexPath)) {
+      tableView.moveRowAtIndexPath(indexPathPair.0, toIndexPath: indexPathPair.1)
    }
 
    // MARK: - Segues

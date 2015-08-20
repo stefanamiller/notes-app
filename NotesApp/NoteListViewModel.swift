@@ -11,16 +11,20 @@ import ReactiveCocoa
 
 class NoteListViewModel: NSObject {
    typealias IndicesChangeSignal = Signal<Int,NoError>
+   typealias IndicesMoveSignal   = Signal<(Int,Int),NoError>
    
    let notes = MutableProperty<[NoteViewModel]>([NoteViewModel]())
    
    let insertSignal: IndicesChangeSignal
    let removeSignal: IndicesChangeSignal
+   let updateSignal: IndicesMoveSignal
    
    var addAction: CocoaAction!
    
    private let insertSink: IndicesChangeSignal.Observer
    private let removeSink: IndicesChangeSignal.Observer
+   private let updateSink: IndicesMoveSignal.Observer
+   
    override init() {
       
       let (insertPipeSig, insertPipeSink) = IndicesChangeSignal.pipe()
@@ -30,6 +34,10 @@ class NoteListViewModel: NSObject {
       let (removePipeSig, removePipeSink) = IndicesChangeSignal.pipe()
       removeSignal = removePipeSig
       removeSink   = removePipeSink
+      
+      let (updatePipeSig, updatePipeSink) = IndicesMoveSignal.pipe()
+      updateSignal = updatePipeSig
+      updateSink   = updatePipeSink
       
       super.init()
       
@@ -44,6 +52,7 @@ class NoteListViewModel: NSObject {
    deinit {
       sendCompleted(insertSink)
       sendCompleted(removeSink)
+      sendCompleted(updateSink)
    }
    
    func countOfNotes() -> Int {
@@ -66,5 +75,40 @@ class NoteListViewModel: NSObject {
       newNotes.removeAtIndex(index)
       notes.put(newNotes)
       sendNext(removeSink, index)
+   }
+   
+   func updateNote(viewModel: NoteViewModel) {
+      
+      let foundIndex = find(notes.value, viewModel)
+      if let index = foundIndex {
+         updateNoteAtIndex(index, viewModel)
+      }
+      
+   }
+   
+   private func updateNoteAtIndex(index: Int, _ viewModel: NoteViewModel) {
+      
+      func sortNotesByUpdatedDate(inout notes: [NoteViewModel]) {
+         sort(&notes, { (noteVM1: NoteViewModel, noteVM2: NoteViewModel) -> Bool in
+            var noteDate1 = noteVM1.note?.dateUpdated
+            var noteDate2 = noteVM2.note?.dateUpdated
+            if let date1 = noteDate1, let date2 = noteDate2 {
+               return date1.compare(date2) == NSComparisonResult.OrderedDescending
+            }
+            else {
+               return false
+            }
+         })
+      }
+      
+      var newNotes = notes.value
+      sortNotesByUpdatedDate(&newNotes)
+      
+      let foundNewIndex = find(newNotes, viewModel)
+      
+      if let newIndex = foundNewIndex {
+         notes.put(newNotes);
+         sendNext(updateSink, (index, newIndex))
+      }
    }
 }

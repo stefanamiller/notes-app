@@ -22,6 +22,7 @@ class NoteViewModel: NSObject {
    private(set) var updateSignal: Signal<NoteViewModel,NoError>!
    
    let dateStamp = MutableProperty<String>("")
+   let title     = MutableProperty<String?>("")
    let noteBody  = MutableProperty<String?>("")
    
    let editingEnabled: ConstantProperty<Bool>
@@ -63,6 +64,16 @@ class NoteViewModel: NSObject {
 //            NSLog("Formatted date \(dateStr)")
 //         })
       
+      title <~ noteMutator.producer
+         |> map { note in
+            if let title = note?.title {
+               return title
+            }
+            else {
+               return "Untitled"
+            }
+         }
+      
       noteBody <~ noteMutator.producer
          |> ignoreNil
          |> map { note in
@@ -90,10 +101,10 @@ class NoteViewModel: NSObject {
    
    private lazy var formatUpdatedDate: (Signal<NSDate, NoError> -> Signal<String, NoError>)! = map { date in
       if NSCalendar.currentCalendar().isDateInToday(date) {
-         return NSDateFormatter.localizedStringFromDate(date, dateStyle: .NoStyle, timeStyle: .MediumStyle)
+         return NSDateFormatter.localizedStringFromDate(date, dateStyle: .NoStyle, timeStyle: .ShortStyle)
       }
       else {
-         return NSDateFormatter.localizedStringFromDate(date, dateStyle: .ShortStyle, timeStyle: .MediumStyle)
+         return NSDateFormatter.localizedStringFromDate(date, dateStyle: .ShortStyle, timeStyle: .ShortStyle)
       }
    }
 }

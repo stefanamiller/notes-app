@@ -10,7 +10,13 @@ import UIKit
 import ReactiveCocoa
 
 class NoteListTableViewCell: UITableViewCell {
-   lazy var updatedTime: DynamicProperty! = DynamicProperty(object: self.textLabel, keyPath: "text")
+   lazy var noteTitle: DynamicProperty! = DynamicProperty(object: self.textLabel, keyPath: "text")
+   lazy var updatedTime: DynamicProperty! = DynamicProperty(object: self.detailTextLabel, keyPath: "text")
+   
+   func bindViewModel(viewModel: NoteViewModel) {
+      noteTitle <~ viewModel.title.producer |> map { $0 as AnyObject? }
+      updatedTime <~ viewModel.dateStamp.producer |> map { $0 as AnyObject }
+   }
 }
 
 class NotesListViewController: UITableViewController {
@@ -119,7 +125,7 @@ class NotesListViewController: UITableViewController {
       let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! NoteListTableViewCell
 
       let noteModel = listViewModel.noteViewModelAtIndex(indexPath.row)
-      cell.updatedTime <~ noteModel.dateStamp.producer |> map { $0 as AnyObject }
+      cell.bindViewModel(noteModel)
       return cell
    }
 

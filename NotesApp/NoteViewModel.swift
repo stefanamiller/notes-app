@@ -52,33 +52,43 @@ class NoteViewModel: NSObject {
    }
    
    private func setupBindings() {
+      
       dateStamp <~ noteMutator.producer
          |> ignoreNil
-         |> map { note in
+         |> map { [weak self] note in
             note.dateUpdated
          }
-         //         |> on(next: { date in
-         //            NSLog("Formatting date \(date)")
-         //         })
-         |> self.formatUpdatedDate()
+         |> formatUpdatedDate
+//         |> on(next: { dateStr in
+//            NSLog("Formatted date \(dateStr)")
+//         })
       
       noteBody <~ noteMutator.producer
          |> ignoreNil
          |> map { note in
             note.body
          }
-         |> on(next: { value in
-            NSLog("Updated note body!")
-         })
+//         |> on(next: { value in
+//            NSLog("Updated note body!")
+//         })
    }
    
-   func formatUpdatedDate() -> Signal<NSDate, NoError> -> Signal<String, NoError> {
-      return map { date in
-         self.formatUpdatedDate(date)
+//   func updateTime() {
+//      if let noteRaw = self.note {
+//         noteRaw.dateUpdated = NSDate()
+//         noteMutator.put(noteRaw)
+//      }
+//   }
+   
+   func updateText(text: String?) {
+      if let noteRaw = self.note {
+         noteRaw.body = text
+         noteRaw.dateUpdated = NSDate()
+         noteMutator.put(noteRaw)
       }
    }
    
-   func formatUpdatedDate(date: NSDate) -> String {
+   private lazy var formatUpdatedDate: (Signal<NSDate, NoError> -> Signal<String, NoError>)! = map { date in
       if NSCalendar.currentCalendar().isDateInToday(date) {
          return NSDateFormatter.localizedStringFromDate(date, dateStyle: .NoStyle, timeStyle: .MediumStyle)
       }

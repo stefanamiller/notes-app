@@ -68,7 +68,7 @@ class NoteListViewModel: NSObject {
       let newViewModel = NoteViewModel(Note())
       
       newViewModel.updateSignal |> observe(next: { [weak self] updatedViewModel in
-         self!.updateNote(updatedViewModel)
+         self!.updateSortingOfNote(updatedViewModel)
       })
       
       newNotes.insert(newViewModel, atIndex: 0)
@@ -83,38 +83,44 @@ class NoteListViewModel: NSObject {
       sendNext(removeSink, index)
    }
    
-   func updateNote(viewModel: NoteViewModel) {
+   func updateSortingOfNote(viewModel: NoteViewModel) {
       
       let foundIndex = find(notes.value, viewModel)
       if let index = foundIndex {
-         updateNoteAtIndex(index, viewModel)
+         if foundIndex > 0 {
+            reorderUpdatedNote(viewModel, atIndex: index)
+         }
       }
       
    }
    
-   private func updateNoteAtIndex(index: Int, _ viewModel: NoteViewModel) {
+   private func reorderUpdatedNote(viewModel: NoteViewModel, atIndex: Int) {
       
-      func sortNotesByUpdatedDate(inout notes: [NoteViewModel]) {
-         sort(&notes, { (noteVM1: NoteViewModel, noteVM2: NoteViewModel) -> Bool in
-            var noteDate1 = noteVM1.note?.dateUpdated
-            var noteDate2 = noteVM2.note?.dateUpdated
-            if let date1 = noteDate1, let date2 = noteDate2 {
-               return date1.compare(date2) == NSComparisonResult.OrderedDescending
+      func findNewNotesIndexFor(viewModel: NoteViewModel, fromIndex: Int) -> Int {
+         var dateUpdated = viewModel.note?.dateUpdated
+         var newIndex = fromIndex
+         for i in reverse(0...fromIndex-1) {
+            var otherDateUpdated = notes.value[i].note?.dateUpdated
+            if let date1 = dateUpdated, let date2 = otherDateUpdated {
+               if date1.compare(date2) == NSComparisonResult.OrderedDescending {
+                  newIndex = i
+               }
+               else {
+                  break
+               }
             }
-            else {
-               return false
-            }
-         })
+         }
+         return newIndex
       }
       
-      var newNotes = notes.value
-      sortNotesByUpdatedDate(&newNotes)
+      let newIndex = findNewNotesIndexFor(viewModel, atIndex)
       
-      let foundNewIndex = find(newNotes, viewModel)
-      
-      if let newIndex = foundNewIndex {
+      if newIndex != atIndex {
+         var newNotes = notes.value
+         newNotes.removeAtIndex(atIndex)
+         newNotes.insert(viewModel, atIndex: newIndex)
          notes.put(newNotes);
-         sendNext(updateSink, (index, newIndex))
+         sendNext(updateSink, (atIndex, newIndex))
       }
    }
 }

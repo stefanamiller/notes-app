@@ -19,25 +19,39 @@ class NoteViewModel: NSObject {
       }
    }}
    
+   private(set) var updateSignal: Signal<NoteViewModel,NoError>!
+   
    let dateStamp = MutableProperty<String>("")
    let noteBody  = MutableProperty<String?>("")
    
    let editingEnabled: ConstantProperty<Bool>
    
    init(_ n: Note?) {
-
       editingEnabled = ConstantProperty(n != nil)
       super.init()
       
       setupBindings()
       self.noteMutator.put(n)
+      
+      observeUpdate()
    }
    
    convenience override init() {
       self.init(nil)
    }
    
-   func setupBindings() {
+   private func observeUpdate() {
+      noteMutator.producer.startWithSignal { [weak self] signal, disposable in
+         self!.updateSignal = signal |> map { note in
+            return self!
+         }
+         signal |> observe(completed: {
+            disposable.dispose()
+         })
+      }
+   }
+   
+   private func setupBindings() {
       dateStamp <~ noteMutator.producer
          |> ignoreNil
          |> map { note in
@@ -70,14 +84,6 @@ class NoteViewModel: NSObject {
       }
       else {
          return NSDateFormatter.localizedStringFromDate(date, dateStyle: .ShortStyle, timeStyle: .MediumStyle)
-      }
-   }
-   
-   func updateText(text: String?) {
-      if let noteRaw = self.note {
-         noteRaw.body = text
-         noteRaw.dateUpdated = NSDate()
-         noteMutator.put(noteRaw)
       }
    }
 }

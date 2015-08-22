@@ -65,7 +65,13 @@ class NoteListViewModel: NSObject {
    
    func createNewNote() {
       var newNotes = notes.value
-      newNotes.insert(NoteViewModel(Note()), atIndex: 0)
+      let newViewModel = NoteViewModel(Note())
+      
+      newViewModel.updateSignal |> observe(next: { [weak self] updatedViewModel in
+         self!.updateNote(updatedViewModel)
+      })
+      
+      newNotes.insert(newViewModel, atIndex: 0)
       notes.put(newNotes)
       sendNext(insertSink, 0)
    }
